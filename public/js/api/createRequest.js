@@ -6,8 +6,8 @@ const createRequest = (options = {}) => {
     const xhr = new XMLHttpRequest;
     const formData = new FormData();
     xhr.responseType = "json";
-
     let address = "?";
+
     for (key in options.data) {
         address += key + "=" + options.data[key] + "&";
     }
@@ -20,6 +20,9 @@ const createRequest = (options = {}) => {
     try {
         if (options.method === "GET") {
             xhr.open(options.method, options.url + address);
+            xhr.send();
+        } else {
+            xhr.open(options.method, options.url);
             xhr.send(formData);
         }
     } catch (err) {

@@ -56,9 +56,8 @@ class User {
    * */
   static login(data, callback) {
     createRequest({
-      url: this.URL + '/login',
-      method: 'POST',
-      responseType: 'json',
+      url: this.URL + "/login",
+      method: "POST",
       data,
       callback: (err, response) => {
         if (response && response.user) {
@@ -97,10 +96,9 @@ class User {
     createRequest({
       url: this.URL + "/logout",
       method: "POST",
-      data,
       callback: (err, response) => {
         if (response && response.user) {
-          this.setCurrent(response.user);
+          this.unsetCurrent();
         }
         callback (err, response);
       }

@@ -9,7 +9,7 @@ class Entity {
    * Это могут быть счета или доходы/расходы
    * (в зависимости от того, что наследуется от Entity)
    * */
-  static list(data, callback){
+  static list(data, callback) {
     createRequest({
       url: this.URL,
       method: "GET",
