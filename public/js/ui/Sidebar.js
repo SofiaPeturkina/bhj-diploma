@@ -20,6 +20,7 @@ class Sidebar {
   static initToggleButton() {
     const sidebarMini = document.querySelector(".sidebar-mini");
     const sidebarToggle = document.querySelector(".sidebar-toggle");
+    
     sidebarToggle.addEventListener("click", (e) => {
       e.preventDefault();
       sidebarMini.classList.toggle("sidebar-open");
@@ -52,7 +53,7 @@ class Sidebar {
     menuItemLogout.addEventListener("click", (e) => {
       e.preventDefault();
       User.logout(() => {
-        App.getModal("register").open();
+        App.setState("init");
       });
     });
   }
