@@ -11,14 +11,18 @@ class TransactionsPage {
    * через registerEvents()
    * */
   constructor( element ) {
-
+    this.element = element;
+    if (!element) {
+      throw new Error("Произошла ошибка! Пустой элемент формы.");
+    }
+    this.registerEvents();
   }
 
   /**
    * Вызывает метод render для отрисовки страницы
    * */
   update() {
-
+    this.render(this.lastOptions);
   }
 
   /**
@@ -28,7 +32,18 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
+    this.element.addEventListener("click", (e) => {
+      e.preventDefault();
+      const accountRemove = e.target.closest(".remove-account");
+      const transactionRemove = e.target.closest(".transaction__remove");
 
+      if (accountRemove) {
+        this.removeAccount();
+      }
+      if (transactionRemove) {
+        this.removeTransaction(transactionRemove.dataset.id);
+      }
+    });
   }
 
   /**
@@ -41,7 +56,15 @@ class TransactionsPage {
    * для обновления приложения
    * */
   removeAccount() {
-
+    if (!this.lastOptions) {
+      return;
+    }
+    if (confirm ("Вы действительно хотите удалить счет?")) {
+      Account.remove({id: this.lastOptions.account_id}, (err, response) => {
+        App.updateWidgets();
+      });
+      this.clear;
+    }
   }
 
   /**
@@ -51,7 +74,13 @@ class TransactionsPage {
    * либо обновляйте текущую страницу (метод update) и виджет со счетами
    * */
   removeTransaction( id ) {
-
+    if (confirm ("Вы действительно хотите удалить транзакцию?")) {
+      Transaction.remove({id}, (err, response) => {
+        if (response) {
+          App.update();
+        }
+      });
+    }
   }
 
   /**
@@ -61,7 +90,22 @@ class TransactionsPage {
    * в TransactionsPage.renderTransactions()
    * */
   render(options){
+    if (!options) {
+      return;
+    }
+    this.lastOptions = options;
 
+    Account.get(options.account_id, (err, response) => {
+      if (response) {
+        this.renderTitle(response.data.name);
+      }
+    });
+
+    Transaction.list(options, (err, response) => {
+      if (response) {
+        this.renderTransactions(response.data);
+      }
+    });
   }
 
   /**
@@ -70,14 +114,17 @@ class TransactionsPage {
    * Устанавливает заголовок: «Название счёта»
    * */
   clear() {
-
+    this.renderTransactions([]);
+    this.renderTitle("Название счета");
+    this.lastOptions = "";
   }
 
   /**
    * Устанавливает заголовок в элемент .content-title
    * */
   renderTitle(name){
-
+    const title = this.element.querySelector(".content-title");
+    title.texrContent = name;
   }
 
   /**
@@ -85,7 +132,13 @@ class TransactionsPage {
    * в формат «10 марта 2019 г. в 03:20»
    * */
   formatDate(date){
-
+    const currentTime = () => {
+      return new Date().toLocaleTimeString("ru-Ru", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    return `${currentDate()} в ${currentTime()}`
   }
 
   /**
@@ -93,14 +146,38 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item){
-
+    const html = `
+    <div class="transaction transaction_${item.type} row">
+      <div class="col-md-7 transaction__details">
+        <div class="transaction__icon">
+          <span class="fa fa-money fa-2x"></span>
+        </div>
+        <div class="transaction__info">
+          <h4 class="transaction__title">${item.name}</h4>
+          <div class="transaction__date">${item.formatDate()}</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="transaction__summ">${item.sum}<span class="currency">₽</span>
+        </div>
+      </div>
+      <div class="col-md-2 transaction__controls">
+        <button class="btn btn-danger transaction__remove" data-id=${item.id}>
+            <i class="fa fa-trash"></i>  
+        </button>
+      </div>
+    </div>
+    `;
+    return html;
   }
 
   /**
    * Отрисовывает список транзакций на странице
    * используя getTransactionHTML
    * */
-  renderTransactions(data){
-
+  renderTransactions(data) {
+    const content = this.element.querySelector(".content");
+    content.innerHTML = "";
+    data.forEach(item => content.insertAdjacentHTML("beforeEnd". this.getTransactionHTML(item)));
   }
 }
