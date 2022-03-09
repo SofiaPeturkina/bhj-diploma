@@ -124,7 +124,7 @@ class TransactionsPage {
    * */
   renderTitle(name){
     const title = this.element.querySelector(".content-title");
-    title.texrContent = name;
+    title.textContent = name;
   }
 
   /**
@@ -132,7 +132,14 @@ class TransactionsPage {
    * в формат «10 марта 2019 г. в 03:20»
    * */
   formatDate(date){
-    const currentTime = () => {
+    const currentDate = () => {
+      return new Date().toLocaleString("ru-Ru", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+    const currentTime = () => { 
       return new Date().toLocaleTimeString("ru-Ru", {
         hour: "2-digit",
         minute: "2-digit",
@@ -148,24 +155,24 @@ class TransactionsPage {
   getTransactionHTML(item){
     const html = `
     <div class="transaction transaction_${item.type} row">
-      <div class="col-md-7 transaction__details">
-        <div class="transaction__icon">
-          <span class="fa fa-money fa-2x"></span>
-        </div>
-        <div class="transaction__info">
-          <h4 class="transaction__title">${item.name}</h4>
-          <div class="transaction__date">${item.formatDate()}</div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="transaction__summ">${item.sum}<span class="currency">₽</span>
-        </div>
-      </div>
-      <div class="col-md-2 transaction__controls">
-        <button class="btn btn-danger transaction__remove" data-id=${item.id}>
-            <i class="fa fa-trash"></i>  
-        </button>
-      </div>
+    <div class="col-md-7 transaction__details">
+    <div class="transaction__icon">
+    <span class="fa fa-money fa-2x"></span>
+    </div>
+    <div class="transaction__info">
+    <h4 class="transaction__title">${item.name}</h4>
+    <div class="transaction__date">${this.formatDate()}</div>
+    </div>
+    </div>
+    <div class="col-md-3">
+    <div class="transaction__summ">${item.sum}<span class="currency">₽</span>
+    </div>
+    </div>
+    <div class="col-md-2 transaction__controls">
+    <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+    <i class="fa fa-trash"></i>  
+    </button>
+    </div>
     </div>
     `;
     return html;
@@ -178,6 +185,6 @@ class TransactionsPage {
   renderTransactions(data) {
     const content = this.element.querySelector(".content");
     content.innerHTML = "";
-    data.forEach(item => content.insertAdjacentHTML("beforeEnd". this.getTransactionHTML(item)));
+    data.forEach(item => content.insertAdjacentHTML("beforeEnd", this.getTransactionHTML(item)));
   }
 }
